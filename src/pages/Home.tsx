@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, MapPin, Languages, Phone, Mail, Globe2, Filter, Loader2, Download, Bookmark, Calendar, Heart, Map } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
 // import { FavoriteButton } from "@/components/FavoriteButton"; // Removed to prevent OAuth signup
-import { Link } from "wouter";
+import Link from "next/link";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { InterpreterMap } from "@/components/InterpreterMap";
 import { SavedSearchSidebar } from "@/components/SavedSearchSidebar";
@@ -83,10 +83,10 @@ export default function Home() {
     radius: appliedFilters.radius,
     availableOnly: appliedFilters.availableOnly || undefined,
     certificationType: appliedFilters.certificationType || undefined,
-        minExperience: appliedFilters.minExperience !== 0 ? appliedFilters.minExperience : undefined,
-        maxExperience: appliedFilters.maxExperience !== 30 ? appliedFilters.maxExperience : undefined,
-        minRate: appliedFilters.minRate !== 0 ? appliedFilters.minRate : undefined,
-        maxRate: appliedFilters.maxRate !== 200 ? appliedFilters.maxRate : undefined,
+    minExperience: appliedFilters.minExperience !== 0 ? appliedFilters.minExperience : undefined,
+    maxExperience: appliedFilters.maxExperience !== 30 ? appliedFilters.maxExperience : undefined,
+    minRate: appliedFilters.minRate !== 0 ? appliedFilters.minRate : undefined,
+    maxRate: appliedFilters.maxRate !== 200 ? appliedFilters.maxRate : undefined,
     proficiencyLevel: appliedFilters.proficiencyLevel || undefined,
     limit: pageSize,
     offset: currentPage * pageSize,
@@ -201,7 +201,7 @@ export default function Home() {
   // Geocode ZIP code when it changes
   const geocodeQuery = trpc.geocode.useQuery(
     { address: zipCode },
-    { 
+    {
       enabled: !!zipCode && /^\d{5}$/.test(zipCode),
     }
   );
@@ -638,15 +638,15 @@ export default function Home() {
               <Button
                 variant="outline"
                 onClick={handleExportCSV}
-              disabled={isExporting}
-            >
-              {isExporting ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Download className="w-4 h-4 mr-2" />
-              )}
-              Export to CSV
-            </Button>
+                disabled={isExporting}
+              >
+                {isExporting ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
+                Export to CSV
+              </Button>
             </div>
           )}
         </div>
@@ -683,8 +683,8 @@ export default function Home() {
             </CardContent>
           </Card>
         ) : showMap ? (
-          <InterpreterMap 
-            interpreters={interpretersWithLanguages} 
+          <InterpreterMap
+            interpreters={interpretersWithLanguages}
             userLocation={userLocation || undefined}
             radiusMiles={appliedFilters.zipCode ? appliedFilters.radius : undefined}
           />
@@ -711,7 +711,7 @@ export default function Home() {
                             </Badge>
                           )}
                           {(interpreter as any).isAvailable !== undefined && (
-                            <Badge 
+                            <Badge
                               variant={(interpreter as any).isAvailable ? "default" : "secondary"}
                               className={(interpreter as any).isAvailable ? "bg-green-500 hover:bg-green-600" : "bg-gray-400"}
                             >
@@ -752,8 +752,8 @@ export default function Home() {
                       {/* Rating */}
                       {(interpreter as any).rating && parseFloat((interpreter as any).rating) > 0 && (
                         <div>
-                          <StarRating 
-                            rating={parseFloat((interpreter as any).rating)} 
+                          <StarRating
+                            rating={parseFloat((interpreter as any).rating)}
                             size="sm"
                             showNumber={true}
                           />

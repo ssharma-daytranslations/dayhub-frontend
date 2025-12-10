@@ -12,10 +12,13 @@ const CORRECT_PASSWORD = 'dayhub2025'; // You can change this password
 const AUTH_KEY = 'dayhub_authenticated';
 
 export function PasswordProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    // Check if already authenticated in session storage
-    return sessionStorage.getItem(AUTH_KEY) === 'true';
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsAuthenticated(sessionStorage.getItem(AUTH_KEY) === 'true');
+    }
+  }, []);
 
   const authenticate = (password: string): boolean => {
     if (password === CORRECT_PASSWORD) {
