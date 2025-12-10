@@ -2,9 +2,15 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
 import path from "path";
+
 import { defineConfig } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 
+// Set default env vars to suppress warnings and runtime errors if .env is missing
+process.env.VITE_ANALYTICS_ENDPOINT = process.env.VITE_ANALYTICS_ENDPOINT || "";
+process.env.VITE_ANALYTICS_WEBSITE_ID = process.env.VITE_ANALYTICS_WEBSITE_ID || "";
+process.env.VITE_OAUTH_PORTAL_URL = process.env.VITE_OAUTH_PORTAL_URL || "https://auth.example.com";
+process.env.VITE_APP_ID = process.env.VITE_APP_ID || "dev-app-id";
 
 const plugins = [react(), tailwindcss(), vitePluginManusRuntime()];
 
