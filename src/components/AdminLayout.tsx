@@ -42,11 +42,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   const navItems = [
-    { path: "/admin", icon: BarChart3, label: "Dashboard" },
-    { path: "/admin/interpreters", icon: Users, label: "Interpreters" },
+    { path: "/AdminDashboard", icon: BarChart3, label: "Dashboard" },
+    { path: "/AdminInterpreters", icon: Users, label: "Interpreters" },
     // { path: "/admin/verification", icon: CheckCircle, label: "Verification" },
-    { path: "/admin/reviews", icon: MessageSquare, label: "Reviews" },
-    { path: "/admin/import", icon: Upload, label: "Import CSV" },
+    { path: "/AdminReviews", icon: MessageSquare, label: "Reviews" },
+    { path: "/AdminImport", icon: Upload, label: "Import CSV" },
   ];
 
   return (

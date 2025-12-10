@@ -27,7 +27,7 @@ export default function AdminInterpreters() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" asChild>
-              <Link href="/admin/interpreters/create">
+              <Link href="/Admin">
                 <Plus className="w-4 h-4 mr-2" />
                 Create New
               </Link>

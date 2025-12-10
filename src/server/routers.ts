@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { router, publicProcedure } from './trpc';
+import { db } from "@/lib/db";
+import { interpreters } from "@/lib/schema";
+import { eq, and, count } from "drizzle-orm";
 
 export const appRouter = router({
   getLanguages: publicProcedure.query(() => {
@@ -11,8 +14,13 @@ export const appRouter = router({
   getStates: publicProcedure.query(() => {
     return ["NY", "CA", "IL", "TX", "AZ", "PA"];
   }),
-  getStats: publicProcedure.query(() => {
-    return { totalInterpreters: 21943 };
+  getStats: publicProcedure.query(async () => {
+    const result = await db.select({ count: count() }).from(interpreters);
+    return { 
+      totalInterpreters: result[0].count,
+      totalCalls: 0,
+      topMetros: []
+    };
   }),
   searchInterpreters: publicProcedure
     .input(z.object({
@@ -35,64 +43,23 @@ export const appRouter = router({
       sortBy: z.enum(['name', 'rating', 'distance']).optional(),
       sortOrder: z.enum(['asc', 'desc']).optional(),
     }))
-    .query(() => {
-      // Return mock data
+    .query(async ({ input }) => {
+      const filters: any[] = [];
+      if (input.sourceLanguage) filters.push(eq(interpreters.sourceLanguage, input.sourceLanguage));
+      if (input.targetLanguage) filters.push(eq(interpreters.targetLanguage, input.targetLanguage));
+      if (input.metro) filters.push(eq(interpreters.metro, input.metro));
+      if (input.state) filters.push(eq(interpreters.state, input.state));
+      
+      const result = await db.select()
+        .from(interpreters)
+        .where(filters.length > 0 ? and(...filters) : undefined)
+        .limit(input.limit || 10)
+        .offset(input.offset || 0);
+
       return {
-        interpreters: [
-          {
-            id: 1,
-            firstName: "Maria",
-            lastName: "Gonzalez",
-            city: "New York",
-            state: "NY",
-            metro: "New York",
-            sourceLanguage: "English",
-            targetLanguage: "Spanish",
-            rating: "4.9",
-            specialties: JSON.stringify(["Medical", "Legal"]),
-            phone: "(555) 123-4567",
-            email: "maria.g@example.com",
-            isAvailable: true,
-            isVetted: true,
-            approvalStatus: "approved"
-          },
-          {
-            id: 2,
-            firstName: "John",
-            lastName: "Smith",
-            city: "Los Angeles",
-            state: "CA",
-            metro: "Los Angeles",
-            sourceLanguage: "English",
-            targetLanguage: "French",
-            rating: "4.7",
-            specialties: JSON.stringify(["Conference", "Business"]),
-            phone: "(555) 987-6543",
-            email: "john.s@example.com",
-            isAvailable: false,
-            isVetted: false,
-            approvalStatus: "approved"
-          },
-          {
-            id: 3,
-            firstName: "Wei",
-            lastName: "Chen",
-            city: "San Francisco",
-            state: "CA",
-            metro: "San Francisco",
-            sourceLanguage: "English",
-            targetLanguage: "Chinese",
-            rating: "5.0",
-            specialties: JSON.stringify(["Medical", "Community"]),
-            phone: "(555) 555-5555",
-            email: "wei.c@example.com",
-            isAvailable: true,
-            isVetted: true,
-            approvalStatus: "approved"
-          }
-        ],
-        hasMore: false,
-        total: 3
+        interpreters: result,
+        hasMore: false, 
+        total: result.length 
       };
     }),
   geocode: publicProcedure
@@ -100,7 +67,7 @@ export const appRouter = router({
     .query(() => {
       return { lat: 40.7128, lng: -74.0060 };
     }),
-  exportToCSV: publicProcedure
+  exportInterpretersCSV: publicProcedure
     .input(z.any())
     .query(() => {
       return { csv: "name,email\nMaria,maria@example.com", count: 1 };
@@ -114,10 +81,60 @@ export const appRouter = router({
   deleteSavedSearch: publicProcedure.input(z.any()).mutation(() => {
     return { success: true };
   }),
+  importInterpretersCSV: publicProcedure
+    .input(z.object({ csvData: z.string() }))
+    .mutation(async ({ input }) => {
+      const rows = input.csvData.split('\n').slice(1); // simple parsing, skipping header
+      let success = 0;
+      let failed = 0;
+
+      for (const row of rows) {
+          if (!row.trim()) continue;
+          try {
+            // Simplified CSV parsing (assuming standard format)
+            const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+            // Expected: name, email, phone, source, target... (adjust based on actual CSV format)
+            // For now, map loosely
+            const [name, email, phone, sourceLang, targetLang, city, state, metro] = cols;
+            
+            if (email && name) {
+                const parts = name.split(' ');
+                const firstName = parts[0];
+                const lastName = parts.slice(1).join(' ') || 'Unknown';
+
+                await db.insert(interpreters).values({
+                    firstName,
+                    lastName,
+                    email,
+                    phone: phone || undefined,
+                    sourceLanguage: sourceLang || undefined,
+                    targetLanguage: targetLang || undefined,
+                    city: city || undefined,
+                    state: state || undefined,
+                    metro: metro || undefined,
+                    isAvailable: true
+                });
+                success++;
+            } else {
+                failed++;
+            }
+          } catch (e) {
+            console.error("Import error for row", row, e);
+            failed++;
+          }
+      }
+      return { success, failed };
+    }),
+
   auth: router({
     me: publicProcedure.query(() => {
-      // Return mock user or null
-      return null; 
+      // Return mock admin user for demo purposes
+      return {
+        id: "admin-1",
+        name: "Admin User",
+        email: "admin@example.com",
+        role: "admin"
+      }; 
     }),
     logout: publicProcedure.mutation(() => {
       return { success: true };

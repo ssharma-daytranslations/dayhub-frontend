@@ -114,14 +114,14 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="space-y-2">
                 <a
-                  href="/admin/interpreters"
+                  href="/AdminInterpreters"
                   className="block p-3 rounded-lg hover:bg-muted transition-colors"
                 >
                   <p className="font-medium">Manage Interpreters</p>
                   <p className="text-xs text-muted-foreground">Review and approve new interpreters</p>
                 </a>
                 <a
-                  href="/admin/reviews"
+                  href="/AdminReviews"
                   className="block p-3 rounded-lg hover:bg-muted transition-colors"
                 >
                   <p className="font-medium">Moderate Reviews</p>

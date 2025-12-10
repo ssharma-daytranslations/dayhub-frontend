@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { read, utils } from "xlsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -25,14 +26,31 @@ export default function AdminImport() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.type === "text/csv") {
-      setFile(selectedFile);
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+
+    if (selectedFile.name.endsWith(".csv") || selectedFile.type === "text/csv") {
       const reader = new FileReader();
       reader.onload = (event) => {
         const content = event.target?.result as string;
         setCsvData(content);
       };
       reader.readAsText(selectedFile);
+    } else if (selectedFile.name.match(/\.(xlsx|xls)$/)) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const data = event.target?.result;
+        const workbook = read(data, { type: "array" });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const csv = utils.sheet_to_csv(worksheet);
+        setCsvData(csv);
+      };
+      reader.readAsArrayBuffer(selectedFile);
+    } else {
+      alert("Unsupported file type. Please upload a CSV or Excel file.");
+      setFile(null);
     }
   };
 
@@ -40,14 +58,14 @@ export default function AdminImport() {
     // Basic CSV validation
     const errors: ValidationError[] = [];
     const lines = csvData.split("\n");
-    
+
     if (lines.length < 2) {
       errors.push({ row: 0, field: "file", message: "CSV file is empty or has no data rows" });
     }
 
     const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
     const requiredFields = ["name", "email", "phone", "sourcelanguage", "targetlanguage"];
-    
+
     requiredFields.forEach(field => {
       if (!headers.includes(field)) {
         errors.push({ row: 0, field, message: `Missing required column: ${field}` });
@@ -103,13 +121,12 @@ export default function AdminImport() {
               {["upload", "validate", "import", "complete"].map((s, idx) => (
                 <div key={s} className="flex items-center">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      step === s
-                        ? "bg-blue-600 text-white"
-                        : ["validate", "import", "complete"].indexOf(step) > idx
+                    className={`w-10 h-10 rounded-full flex items-center justify-center ${step === s
+                      ? "bg-blue-600 text-white"
+                      : ["validate", "import", "complete"].indexOf(step) > idx
                         ? "bg-green-600 text-white"
                         : "bg-gray-200 text-gray-600"
-                    }`}
+                      }`}
                   >
                     {idx + 1}
                   </div>
