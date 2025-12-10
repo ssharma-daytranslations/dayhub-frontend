@@ -1,16 +1,18 @@
-import { Link, useLocation } from "wouter";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Shield, Users, MessageSquare, BarChart3, Home, LogOut, Upload, CheckCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { usePathname, useRouter } from "next/navigation";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
 export function AdminLayout({ children }: AdminLayoutProps) {
-  const [location, setLocation] = useLocation();
+  const pathname = usePathname();
+  const router = useRouter();
   const { data: user, isLoading } = trpc.auth.me.useQuery();
   const logoutMutation = trpc.auth.logout.useMutation();
 
@@ -18,9 +20,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   useEffect(() => {
     if (!isLoading && (!user || user.role !== "admin")) {
       toast.error("Access denied. Admin privileges required.");
-      setLocation("/");
+      router.push("/");
     }
-  }, [user, isLoading, setLocation]);
+  }, [user, isLoading, router]);
 
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();
@@ -72,7 +74,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           {navItems.map((item) => (
             <Link key={item.path} href={item.path}>
               <Button
-                variant={location === item.path ? "secondary" : "ghost"}
+                variant={pathname === item.path ? "secondary" : "ghost"}
                 className="w-full justify-start gap-2"
               >
                 <item.icon className="w-4 h-4" />

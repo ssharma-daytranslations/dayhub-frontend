@@ -2,7 +2,7 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "wouter";
+import Link from "next/link";
 import { Heart, MapPin, Languages, Phone, Mail, ArrowLeft, Loader2 } from "lucide-react";
 import { StarRating } from "@/components/StarRating";
 import { FavoriteButton } from "@/components/FavoriteButton";
@@ -100,15 +100,15 @@ export default function MyFavorites() {
                         </CardTitle>
                         <div className="flex items-center gap-2">
                           {favorite.isAvailable !== undefined && (
-                            <Badge 
+                            <Badge
                               variant={favorite.isAvailable ? "default" : "secondary"}
                               className={favorite.isAvailable ? "bg-green-500 hover:bg-green-600" : "bg-gray-400"}
                             >
                               {favorite.isAvailable ? "Available" : "Busy"}
                             </Badge>
                           )}
-                          <FavoriteButton 
-                            interpreterId={favorite.interpreterId} 
+                          <FavoriteButton
+                            interpreterId={favorite.interpreterId}
                             initialIsFavorited={true}
                           />
                         </div>

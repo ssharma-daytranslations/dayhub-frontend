@@ -6,7 +6,7 @@ import { trpc } from "@/lib/trpc";
 import { Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { StarRating } from "@/components/StarRating";
-import { Link } from "wouter";
+import Link from "next/link";
 
 export default function AdminReviews() {
   const { data: searchResults } = trpc.searchInterpreters.useQuery({
@@ -38,7 +38,7 @@ export default function AdminReviews() {
           ) : (
             interpreters.map((interpreter: any) => {
               if (!interpreter.rating || parseFloat(interpreter.rating) === 0) return null;
-              
+
               return (
                 <Card key={interpreter.id}>
                   <CardHeader>

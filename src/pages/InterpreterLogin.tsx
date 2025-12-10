@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useSearch } from "wouter";
+import { useRouter, useSearchParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +9,8 @@ import { toast } from "sonner";
 import { Loader2, Mail, LogIn } from "lucide-react";
 
 export default function InterpreterLogin() {
-  const [, setLocation] = useLocation();
-  const searchParams = new URLSearchParams(useSearch());
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const tokenFromUrl = searchParams.get("token");
 
   const [email, setEmail] = useState("");
@@ -37,9 +37,9 @@ export default function InterpreterLogin() {
       // Store interpreter ID in session storage
       sessionStorage.setItem("interpreterId", data.id.toString());
       sessionStorage.setItem("interpreterName", `${data.firstName} ${data.lastName}`);
-      
+
       toast.success(`Welcome back, ${data.firstName}!`);
-      setLocation("/interpreter-profile");
+      router.push("/interpreter-profile");
     },
     onError: (error) => {
       toast.error("Login failed", {
@@ -57,7 +57,7 @@ export default function InterpreterLogin() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       toast.error("Please enter your email address");
       return;
@@ -88,7 +88,7 @@ export default function InterpreterLogin() {
           </div>
           <CardTitle className="text-2xl">Interpreter Login</CardTitle>
           <CardDescription>
-            {emailSent 
+            {emailSent
               ? "Check your email for the magic link"
               : "Enter your email to receive a login link"}
           </CardDescription>
@@ -103,7 +103,7 @@ export default function InterpreterLogin() {
                   Check your email inbox for the magic link to access your profile.
                 </p>
               </div>
-              
+
               <Button
                 variant="outline"
                 className="w-full"
@@ -152,7 +152,7 @@ export default function InterpreterLogin() {
               <div className="text-center pt-4">
                 <Button
                   variant="link"
-                  onClick={() => setLocation("/")}
+                  onClick={() => router.push("/")}
                 >
                   Back to Home
                 </Button>

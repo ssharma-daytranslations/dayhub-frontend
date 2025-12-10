@@ -1,4 +1,4 @@
-import { useParams, useLocation } from "wouter";
+import { useParams } from "next/navigation";
 import { trpc } from "../lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,11 @@ import { StarRating } from "../components/StarRating";
 import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
 
-export function PublicProfile() {
-  const { id } = useParams<{ id: string }>();
+export default function PublicProfile() {
+  const params = useParams();
+  // Ensure id is a string
+  const idValue = params?.id;
+  const id = Array.isArray(idValue) ? idValue[0] : idValue;
   const interpreterId = parseInt(id || "0");
   const qrCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -25,7 +28,7 @@ export function PublicProfile() {
   useEffect(() => {
     if (qrCanvasRef.current && typeof window !== "undefined") {
       const profileUrl = window.location.href;
-      
+
       QRCode.toCanvas(
         qrCanvasRef.current,
         profileUrl,

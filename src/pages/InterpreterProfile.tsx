@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useRouter } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,21 +9,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2, Save, Upload, User, MapPin, Languages, Award, DollarSign, FileText, Mic } from "lucide-react";
-import { storagePut } from "../../../server/storage";
+
 
 export default function InterpreterProfile() {
-  const [, setLocation] = useLocation();
+  const router = useRouter();
   const [interpreterId, setInterpreterId] = useState<number | null>(null);
-  
+
   // Get interpreter ID from session storage (set after login)
   useEffect(() => {
     const storedId = sessionStorage.getItem("interpreterId");
     if (storedId) {
       setInterpreterId(parseInt(storedId));
     } else {
-      setLocation("/interpreter-login");
+      router.push("/interpreter-login");
     }
-  }, [setLocation]);
+  }, [router]);
 
   // Fetch validation data
   const { data: validationData } = trpc.interpreterAuth.getValidationData.useQuery();
@@ -207,7 +207,7 @@ export default function InterpreterProfile() {
             <CardDescription>Please log in again</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => setLocation("/interpreter-login")}>Go to Login</Button>
+            <Button onClick={() => router.push("/interpreter-login")}>Go to Login</Button>
           </CardContent>
         </Card>
       </div>
@@ -232,7 +232,7 @@ export default function InterpreterProfile() {
                   <User className="w-5 h-5" />
                   Personal Information
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
@@ -265,7 +265,7 @@ export default function InterpreterProfile() {
                   <MapPin className="w-5 h-5" />
                   Location
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="city">City</Label>
@@ -329,7 +329,7 @@ export default function InterpreterProfile() {
                   <Languages className="w-5 h-5" />
                   Languages
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="sourceLanguage">Source Language</Label>
@@ -387,7 +387,7 @@ export default function InterpreterProfile() {
                   <Award className="w-5 h-5" />
                   Certifications & Rate
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="certifications">Certifications</Label>
@@ -510,9 +510,9 @@ export default function InterpreterProfile() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                size="lg" 
+              <Button
+                type="submit"
+                size="lg"
                 className="w-full"
                 disabled={updateProfileMutation.isPending}
               >

@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { trpc } from "@/lib/trpc";
 import { Check, X, Eye, Download, Plus, Mail } from "lucide-react";
 import { toast } from "sonner";
-import { Link } from "wouter";
+import Link from "next/link";
 
 export default function AdminInterpreters() {
   const { data: searchResults, refetch } = trpc.searchInterpreters.useQuery({

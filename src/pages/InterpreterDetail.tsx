@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useRoute, Link } from "wouter";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,8 +31,9 @@ import { toast } from "sonner";
 import { getLoginUrl } from "@/const";
 
 export default function InterpreterDetail() {
-  const [, params] = useRoute("/interpreter/:id");
-  const interpreterId = params?.id ? parseInt(params.id) : 0;
+  const params = useParams();
+  const idParam = params?.id;
+  const interpreterId = idParam ? parseInt(Array.isArray(idParam) ? idParam[0] : idParam) : 0;
   const [requestDialogOpen, setRequestDialogOpen] = useState(false);
 
   const { data: interpreter, isLoading, error } = trpc.getInterpreter.useQuery(
@@ -95,7 +97,7 @@ export default function InterpreterDetail() {
                 </Badge>
               )}
               {(interpreter as any).isAvailable !== undefined && (
-                <Badge 
+                <Badge
                   variant={(interpreter as any).isAvailable ? "default" : "secondary"}
                   className={(interpreter as any).isAvailable ? "bg-green-500 hover:bg-green-600 text-lg px-4 py-2" : "bg-gray-400 text-lg px-4 py-2"}
                 >
@@ -276,7 +278,7 @@ export default function InterpreterDetail() {
                 {interpreter.email && (
                   <>
                     <Separator />
-                    <Button 
+                    <Button
                       className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-700 text-white font-semibold shadow-lg"
                       size="lg"
                       onClick={() => setRequestDialogOpen(true)}

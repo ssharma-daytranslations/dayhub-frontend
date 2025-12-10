@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+// import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { PasswordProvider, usePassword } from "./contexts/PasswordContext";
@@ -29,27 +29,29 @@ function ProtectedRouter() {
   return <Router />;
 }
 
+// import { Route, Switch } from "wouter";
+// ... imports ...
+
 function Router() {
-  // make sure to consider if you need authentication for certain routes
+  // Routing is now handled by Next.js in src/app
+  return null;
+  /*
   return (
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path="/interpreter/:id" component={InterpreterDetail} />
-      {/* MyBookings and MyFavorites routes removed to prevent OAuth signup */}
       <Route path="/profile/:id" component={PublicProfile} />
-      {/* Interpreter self-service portal */}
       <Route path="/interpreter-login" component={InterpreterLogin} />
       <Route path="/interpreter-profile" component={InterpreterProfile} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/interpreters" component={AdminInterpreters} />
       <Route path="/admin/reviews" component={AdminReviews} />
       <Route path="/admin/import" component={AdminImport} />
-      {/* <Route path="/admin/verification" component={AdminVerification} /> */}
       <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
   );
+  */
 }
 
 // NOTE: About Theme
@@ -62,7 +64,7 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider
         defaultTheme="light"
-        // switchable
+      // switchable
       >
         <PasswordProvider>
           <TooltipProvider>
