@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { interpreters } from "@/lib/schema";
 import { sql } from "drizzle-orm";
 
+console.log("DB Test Route Loaded"); // Force change to ensure git picks it up
+
+
 export async function GET() {
   try {
     // Try to fetch just one record to verify connection and schema
