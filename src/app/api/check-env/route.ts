@@ -12,8 +12,8 @@ export async function GET() {
   return Response.json({
     env_vars_check: {
       DATABASE_URL: status,
-      PROTOCOL_CHECK: protocol, // Should be 'mysql' or 'mysql2'
-      HOST_HINT: hostHint,      // Verify this matches the Remote IP, not 'localhost'
+      PROTOCOL_CHECK: protocol, 
+      HOST_HINT: hostHint,     
       NODE_ENV: process.env.NODE_ENV,
     },
     timestamp: new Date().toISOString()
